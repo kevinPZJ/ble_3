@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.example.kevin.ble_3.MainActivity;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 
 public class BleNotifyParse extends BaseBleMessage{
 
@@ -19,6 +21,11 @@ public class BleNotifyParse extends BaseBleMessage{
 
 	private static BleNotifyParse mBleNotifyParse;
 
+
+
+    private String   Cmd__reSponse;
+
+
 	public static BleNotifyParse getInstance() {
 		if (mBleNotifyParse == null) {
 			mBleNotifyParse = new BleNotifyParse();
@@ -32,9 +39,10 @@ public class BleNotifyParse extends BaseBleMessage{
 		//}
 	}
 
-	private void l_doParse(Activity hrDK, byte[] notifyData) {
+	private String l_doParse(Activity hrDK, byte[] notifyData) {
         // 加入循环队列
 		Log.d(BaseBleMessage.BASE_TAG, "notify: "+BaseBleMessage.byteArrHexToString(notifyData));
+
         for (int i = 0; i < notifyData.length; i++) {
         	if(bufferLen >= BUFFER_MAX_LEN)
         	{
@@ -106,6 +114,7 @@ public class BleNotifyParse extends BaseBleMessage{
         		break;
         	}
         }
+        return  BaseBleMessage.byteArrHexToString(notifyData);
     }
 
 	private boolean Comm_Handle(Activity hrDK, byte[] notifyData, int dataLength) {
@@ -119,6 +128,9 @@ public class BleNotifyParse extends BaseBleMessage{
 		}
 
 		Log.d(BaseBleMessage.BASE_TAG, "rec: "+BaseBleMessage.byteArrHexToString(frame));
+
+        Cmd__reSponse= BaseBleMessage.byteArrHexToString(frame);
+
 		//byte head = notifyData[0];
 		byte cmd = frame[1];
 		int dataLen = bytes2Char(frame, 2);
@@ -184,4 +196,12 @@ public class BleNotifyParse extends BaseBleMessage{
 		int vb = (data[offset+1] << 8) & 0xffff;
 		return va+vb;
 	}
+
+
+	public  String getResponse(){
+
+
+        return  Cmd__reSponse;
+    }
+
 }

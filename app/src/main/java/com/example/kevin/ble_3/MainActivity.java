@@ -1,5 +1,6 @@
 package com.example.kevin.ble_3;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -9,12 +10,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -37,13 +42,18 @@ import com.example.kevin.ble_3.demo.Config;
 import com.example.kevin.ble_3.demo.DeviceListActivity;
 import com.example.kevin.ble_3.utils.Utils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 //    private static  final  String PATH =
-    private static final String FILE_NAME = "UploadText";
+    private static final String FILE_NAME = "/log/";
     private static final String FILE_NAME_SUFFIX = ".txt";
 
 
@@ -153,10 +163,22 @@ public class MainActivity extends AppCompatActivity {
     private Button btnGetBanben;
 
 
+    private  String  cmd_response;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        if (Build.VERSION.SDK_INT>=23)
+        {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.LOCATION_HARDWARE,Manifest.permission.ACCESS_FINE_LOCATION}, 10);   }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,}, 11);   }
+        }
 
         config = new Config(MainActivity.this);
         initView();
@@ -430,96 +452,125 @@ public class MainActivity extends AppCompatActivity {
             // *********************//
             if (action.equals(UartService.ACTION_DATA_AVAILABLE)) {
                 byte[] datapackage = intent.getByteArrayExtra(UartService.EXTRA_DATA);
+
+                bleNotify.doParse(MainActivity.this, datapackage);
+
+                Log.e("66666666666666",bleNotify.getResponse()+"");
+
+
                 sb.append(BaseBleMessage.bytesToHexString(datapackage));
+
                 response = sb.toString().toUpperCase();
+
 
                 String data = response.substring(2, response.length() - 2);
 
                 String cmd_head = data.substring(0, 2);
-                String tail = response.substring(response.length() - 2, response.length());
-
-                Log.e("response", response);
-                Log.e("tail", tail);
-
-                Log.e("response--cmd", cmd_head);
-
-      if ("68".equals(response.substring(0,2)) && "16".equals(response.substring(response.length()-2,response.length()))) {
-
-          Log.e("==response==", response.toString());
-          sb.delete(0, sb.length());
-      }
-//
-//        try{
-//            File dir =new File(getApplicationContext().getExternalCacheDir()+PATH);
-//            if (!dir .exists()) {
-//                dir.mkdir();
-//            }
-//            long current = System.currentTimeMillis();
-//            String time = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
-//                    .format(new Date(current));
-//            File file  = new File(PATH+FILE_NAME+time+FILE_NAME_SUFFIX);
-//
-//            if (!file.exists()){
-//                file.createNewFile();
-//            }
-//
-//            FileOutputStream fos = new FileOutputStream(file);
-//            fos.write(response.getBytes());
-//            Log.e("respon","response aleard print");
-//            fos.close();
-//            sb.delete(0,sb.length());
-//
-//        }catch (Exception e){
-//
-//            e.printStackTrace();
-//            Log.e("ERROR",e.toString());}
-//
-//                }
-//
 
 
-                if (response.substring(response.length() - 2, response.length()).equals("16")) {
+                Log.e("response", response + "");
+
+                if ("68".equals(response.substring(0,2)) && "16".equals(response.substring(response.length()-2,response.length()))) {
+                    switch (response.substring(2, 4)) {
+                        case "83":
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String power = response.substring(8, 10);
+                                    BigInteger srch = new BigInteger(power, 16);
+                                    tvPower.setText(srch.toString());
+
+                                }
+                            });
+                            break;
+
+                        case "86":
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    String heart = response.substring(10, 12);
+                                    BigInteger heartforHex = new BigInteger(heart, 16);
+                                    tvHeartRate.setText(heartforHex.toString());
 
 
+                                    String steps_01 = response.substring(10, 14);
+                                    BigInteger stepforHex_01 = new BigInteger(steps_01, 16);
+                                    int step_01 = Integer.parseInt(stepforHex_01.toString());
+                                    String steps_02 = response.substring(14, 18);
 
-//                    switch (response.substring(0, 4)) {
-//                        case "6883":
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    String power = response.substring(8, 10);
-//                                    BigInteger srch = new BigInteger(power, 16);
-//                                    tvPower.setText(srch.toString());
-//
-//                                }
-//                            });
-//                            sb.delete(0, sb.length());
-//                            break;
-//
-//
-//                        case "6886":
-//                            runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    tvPower.setText(response);
-//                                    String heart = (response.substring(10, 12));
-//                                    BigInteger srch = new BigInteger(heart, 16);
-//                                    tvHeartRate.setText(srch.toString());
-//                                    Log.e("heart", response.substring(10, 12));
-//
-//                                }
-//                            });
-//                            sb.delete(0, sb.length());
-//                            break;
-//                        default:
-//                            break;
-//
-//
-//                    }
+                                    BigInteger stepforHex_02 = new BigInteger(steps_02, 16);
+                                    int step_02 = Integer.parseInt(stepforHex_02.toString());
 
-                    bleNotify.doParse(MainActivity.this, datapackage);
+
+                                    tvStep.setText((step_01 + step_02) + "");
+
+
+                                    String dis_01 = response.substring(18, 22);
+                                    BigInteger disforHex_01 = new BigInteger(dis_01, 16);
+                                    int num_dis_01 = Integer.parseInt(disforHex_01.toString());
+
+                                    String dis_02 = response.substring(22, 26);
+                                    BigInteger disforHex_02 = new BigInteger(dis_02, 16);
+                                    int num_dis_02 = Integer.parseInt(disforHex_02.toString());
+
+                                    tvDistance.setText((num_dis_01 + num_dis_02) + "米");
+
+
+                                    String cal_01 = response.substring(26, 30);
+                                    BigInteger calorHex_01 = new BigInteger(cal_01, 16);
+                                    int num_cal_01 = Integer.parseInt(calorHex_01.toString());
+
+                                    String cal_02 = response.substring(30, 34);
+                                    BigInteger calforHex_02 = new BigInteger(cal_02, 16);
+                                    int num_cal_02 = Integer.parseInt(calforHex_02.toString());
+
+                                    tvHot.setText((num_cal_01 + num_cal_02) + "大卡");
+
+
+                                }
+                            });
+//                  sb.delete(0, sb.length());
+                            break;
+                        default:
+                            break;
+
+                    }
+
+
+                    if ("68".equals(response.substring(0, 2)) && "16".equals(response.substring(response.length() - 2, response.length()))) {
+
+                        String time = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
+                                .format(new Date(System.currentTimeMillis()));
+
+                        File outputImage = new File(getExternalCacheDir(), response.substring(2, 4) + "-" + time + ".txt");
+                        FileOutputStream fos = null;
+                        BufferedWriter writer = null;
+                        try {
+                            if (outputImage.exists()) {
+                                outputImage.delete();
+                            }
+                            outputImage.createNewFile();
+                            fos = new FileOutputStream(outputImage);
+                            fos.write(response.toString().getBytes());
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (writer != null) {
+                                try {
+                                    writer.close();
+                                    sb.delete(0, sb.length());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                    }
+
                 }
-            } else {
+      } else {
                 return;
             }
             if (action.equals(UartService.DEVICE_DOES_NOT_SUPPORT)) {
@@ -536,7 +587,6 @@ public class MainActivity extends AppCompatActivity {
                     mUartService.connect(mDevice.getAddress());
                 }
             }
-
 
         }
     };
