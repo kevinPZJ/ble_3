@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnGetBanben;
 
 
-    private  String  cmd_response;
+    private  String    srt;
 
 
     @Override
@@ -277,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Log.e("time", Utils.getUTCTimeStr());
+//                Log.e("time", Utils.getUTCTimeStr());
 
                 BleCmd20_syncTime bleCmd20_syncTime = new BleCmd20_syncTime();
                 setTx_data(bleCmd20_syncTime.syncCurrentTime());
@@ -451,32 +451,35 @@ public class MainActivity extends AppCompatActivity {
             }
             // *********************//
             if (action.equals(UartService.ACTION_DATA_AVAILABLE)) {
+
+
                 byte[] datapackage = intent.getByteArrayExtra(UartService.EXTRA_DATA);
 
                 bleNotify.doParse(MainActivity.this, datapackage);
 
-                Log.e("66666666666666",bleNotify.getResponse()+"");
+                 srt= bleNotify.getResponse();
+
+                        Log.e("66666666666666666",  srt );
+
+//                sb.append(BaseBleMessage.bytesToHexString(datapackage));
+//
+//                response = sb.toString().toUpperCase();
+//
+//
+//                String data = response.substring(2, response.length() - 2);
+//
+//                String cmd_head = data.substring(0, 2);
+//
+//                Log.e("response", response + "");
 
 
-                sb.append(BaseBleMessage.bytesToHexString(datapackage));
-
-                response = sb.toString().toUpperCase();
-
-
-                String data = response.substring(2, response.length() - 2);
-
-                String cmd_head = data.substring(0, 2);
-
-
-                Log.e("response", response + "");
-
-                if ("68".equals(response.substring(0,2)) && "16".equals(response.substring(response.length()-2,response.length()))) {
-                    switch (response.substring(2, 4)) {
+                if (srt!=null) {
+                    switch (srt.substring(2, 4)) {
                         case "83":
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String power = response.substring(8, 10);
+                                    String power = srt.substring(8, 10);
                                     BigInteger srch = new BigInteger(power, 16);
                                     tvPower.setText(srch.toString());
 
@@ -489,15 +492,15 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
 
-                                    String heart = response.substring(10, 12);
+                                    String heart = srt.substring(10, 12);
                                     BigInteger heartforHex = new BigInteger(heart, 16);
                                     tvHeartRate.setText(heartforHex.toString());
 
 
-                                    String steps_01 = response.substring(10, 14);
+                                    String steps_01 = srt.substring(10, 14);
                                     BigInteger stepforHex_01 = new BigInteger(steps_01, 16);
                                     int step_01 = Integer.parseInt(stepforHex_01.toString());
-                                    String steps_02 = response.substring(14, 18);
+                                    String steps_02 = srt.substring(14, 18);
 
                                     BigInteger stepforHex_02 = new BigInteger(steps_02, 16);
                                     int step_02 = Integer.parseInt(stepforHex_02.toString());
@@ -506,22 +509,22 @@ public class MainActivity extends AppCompatActivity {
                                     tvStep.setText((step_01 + step_02) + "");
 
 
-                                    String dis_01 = response.substring(18, 22);
+                                    String dis_01 = srt.substring(18, 22);
                                     BigInteger disforHex_01 = new BigInteger(dis_01, 16);
                                     int num_dis_01 = Integer.parseInt(disforHex_01.toString());
 
-                                    String dis_02 = response.substring(22, 26);
+                                    String dis_02 = srt.substring(22, 26);
                                     BigInteger disforHex_02 = new BigInteger(dis_02, 16);
                                     int num_dis_02 = Integer.parseInt(disforHex_02.toString());
 
                                     tvDistance.setText((num_dis_01 + num_dis_02) + "米");
 
 
-                                    String cal_01 = response.substring(26, 30);
+                                    String cal_01 = srt.substring(26, 30);
                                     BigInteger calorHex_01 = new BigInteger(cal_01, 16);
                                     int num_cal_01 = Integer.parseInt(calorHex_01.toString());
 
-                                    String cal_02 = response.substring(30, 34);
+                                    String cal_02 = srt.substring(30, 34);
                                     BigInteger calforHex_02 = new BigInteger(cal_02, 16);
                                     int num_cal_02 = Integer.parseInt(calforHex_02.toString());
 
@@ -538,12 +541,12 @@ public class MainActivity extends AppCompatActivity {
                     }
 
 
-                    if ("68".equals(response.substring(0, 2)) && "16".equals(response.substring(response.length() - 2, response.length()))) {
+                    if ("68".equals(srt.substring(0, 2)) && "16".equals(srt.substring(srt.length() - 2, srt.length()))) {
 
                         String time = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss", Locale.CHINA)
                                 .format(new Date(System.currentTimeMillis()));
 
-                        File outputImage = new File(getExternalCacheDir(), response.substring(2, 4) + "-" + time + ".txt");
+                        File outputImage = new File(getExternalCacheDir(), srt.substring(2, 4) + "-" + time + ".txt");
                         FileOutputStream fos = null;
                         BufferedWriter writer = null;
                         try {
@@ -552,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             outputImage.createNewFile();
                             fos = new FileOutputStream(outputImage);
-                            fos.write(response.toString().getBytes());
+                            fos.write(srt.toString().getBytes());
 
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -560,7 +563,8 @@ public class MainActivity extends AppCompatActivity {
                             if (writer != null) {
                                 try {
                                     writer.close();
-                                    sb.delete(0, sb.length());
+//
+
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -570,6 +574,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+
       } else {
                 return;
             }
