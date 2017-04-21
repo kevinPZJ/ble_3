@@ -398,7 +398,7 @@ public class BleActivity extends AppCompatActivity {
                                     BigInteger heartforHex = new BigInteger(heart, 16);
 //                                    tvHeartRate.setText(heartforHex.toString());
 
-                                    String steps_01 = BLe_response.substring(10, 14);
+                                    String steps_01 = BLe_response.substring(12, 14);
                                     BigInteger stepforHex_01 = new BigInteger(steps_01, 16);
                                     int step_01 = Integer.parseInt(stepforHex_01.toString());
                                     String steps_02 = BLe_response.substring(14, 18);
