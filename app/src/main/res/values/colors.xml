@@ -1,7 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="black">#000000</color>
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#009688</color>
+    <color name="colorAccent">@color/colorPrimaryDark</color>
+
+    <color name="tab_checked">@color/colorPrimaryDark</color>
+
+    <color name="tab_unchecked">#757575</color>
+    <color name="mainGreen">#00000000</color>
+
+    <color name="text_color_blue">#4db2f2</color>
+
+    <color name="background_gray">#f2f2f2</color>
+    <color name="background_white" >#ffffff</color>
+    <!-- 标题字体 -->
+    <color name="title_color_white">#ffffff</color>
+    <!-- 标题字体 -->
+    <color name="title_color">#484848</color>
+    <!-- 重要列表、详情文字、较重要菜单、按钮字体 -->
+    <color name="txt_black_color">#3d3d3d</color>
+    <!-- 重要列表、详情文字、较重要菜单、按钮字体 -->
+    <color name="button_green_color">#5bbd54</color>
+    <!-- 提示文字、副标题、备注信息字体 -->
+    <color name="tips_black_color">#a1a1a1</color>
+    <!-- 提示文字、副标题、备注信息字体 -->
+    <color name="txt_green_color">#5bbd54</color>
+    <!-- 搜索框提示信息字体 -->
+    <color name="search_tips_color">#484848</color>
+    <!-- 注册协议 -->
+    <color name="register_text_color">#b3b3b3</color>
+    <!-- item蓝色字体 -->
+    <color name="item_text_color">#4cb2f2</color>    <!--实时公交tab背景-->
+    <color name="bus_tab_bg_color">#FFFFFF</color>
+    <color name="bus_tab_select_color">#5bbd54</color>
+    <color name="shape_oval_blue">#2782C3</color>
+    <color name="shape_oval_red">#CB4448</color>
+    <color name="shape_line_gary">#D4D4D4</color>
+    <color name="item_press_color">#F7F7F7</color>
+    <color name="item_normal_color">#ffffff</color>
+    <color name="background_green">#5bbd54</color>
+    <color name="plan_lind_color">#5bbd54</color>
+
+    <color name="near_bus_item_back_1">#0099cb</color>
+    <color name="near_bus_item_back_2">#5fbede</color>
+    <color name="near_bus_item_back_3">#92daf2</color>
+
+    <color name="road_background_red">#ce5260</color>
+    <color name="road_background_green">#49b993</color>
+    <color name="road_background_yellow">#c9cf4a</color>
+    <color name="real_bus_background_select">#E3F4E2</color>
+    <color name="background_press">#F7F7F7</color>
+    <color name="menu_share_select">#faf046</color>
+    <color name="orange_money">#fb9700</color>
+
+
+    <color name="bg_white">#ffffff</color>
+
+    <color name="text_gray">#999999</color>
+    <color name="text_gray_light">#B3B3B3</color>
+
+    <color name="text_black">#333333</color><!--正式发布时改成666666-->
+    <color name="text_black_light" >#666666</color><!--正式发布时改成666666-->
+
+
+
+
+
+    <color name="black_888888">#888888</color>
+    <color name="text_color_green_013ADF">#013ADF</color>
+    <color name="blue_6eb">#6eb0f3</color>
+    <color name="ios_btn_pressed">#eeeeee</color>
+    <color name="gray_eee">#EEEEEE</color>
+    <color name="blue_afe">#2E9AFE</color>
+    <color name="pink_ece">#F6CECE</color>
+    <color name="red_111">#FF1111</color>
+
+
+    <color name="color_tab_1">#455C65</color>
+    <color name="color_tab_2">#00886A</color>
+    <color name="color_tab_3">#2E9AFE</color>
+  >
+
 </resources>

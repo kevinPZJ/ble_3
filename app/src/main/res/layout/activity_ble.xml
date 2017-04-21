@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+   >
+
+
+    <com.example.kevin.health.Ui.step.StepView
+        android:id="@+id/Step"
+        android:background="#009688"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:background="@drawable/item_selector"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:clickable="true"
+            >
+
+            <RelativeLayout
+                android:minHeight="50dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:paddingLeft="12dp"
+                    android:id="@+id/iv_icon_device_status"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/icon_status_nodevice"
+                    />
+                <TextView
+                    android:id="@+id/tv_device_status"
+                    android:gravity="center_vertical"
+
+                    android:paddingRight="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="未连接蓝牙"
+                    android:textSize="@dimen/text_size_button"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/iv_icon_device_status" />
+                <Button
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/btn_device_status"
+                    android:background="@drawable/parcel_button_bg"
+                    android:layout_alignParentRight="true"
+                    android:textColor="@color/txt_black_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:text="未连接 "
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+        <View style="@style/line_view_style_landscape"/>
+        <LinearLayout
+            android:id="@+id/layout_heart_rate"
+            android:background="@drawable/item_selector"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:minHeight="50dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="心率"
+                    android:drawableRight="@mipmap/default_end_arrow"
+                    android:gravity="center_vertical"
+                    android:drawableLeft="@mipmap/icon_status_nodevice"
+                    android:textSize="@dimen/text_size_button"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <View style="@style/line_view_style_landscape"/>
+
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/tv_device_name"-->
+        <!--android:text="50560550056060"-->
+        <!--android:textSize="20dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/tv_device_State"-->
+        <!--android:text="State"-->
+        <!--android:textSize="20dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/tv_power"-->
+        <!--android:text="电量"-->
+        <!--android:textSize="20dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+
+
+
+    <!--<Button-->
+        <!--android:text="扫描"-->
+        <!--android:id="@+id/btn_scan"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<Button-->
+        <!--android:text="获取电量"-->
+        <!--android:id="@+id/btn_get_power"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+    <!--<Button-->
+        <!--android:text="获取心率"-->
+        <!--android:id="@+id/btn_get_heart_rate"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<Button-->
+        <!--android:text="获取实时数据"-->
+        <!--android:id="@+id/btn_open_heart_rate"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<Button-->
+        <!--android:id="@+id/btn_get_step"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="开启心率" />-->
+
+    <!--<Button-->
+        <!--android:text="设置时间"-->
+        <!--android:id="@+id/btn_set_time"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<Button-->
+        <!--android:text="检查版本"-->
+        <!--android:id="@+id/btn_get_banben"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="2"-->
+        <!--&gt;-->
+        <!--<TextView-->
+
+            <!--android:text="心率"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_heart_rate"-->
+            <!--android:text="心率"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="2"-->
+        <!--&gt;-->
+        <!--<TextView-->
+
+            <!--android:text="步数"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_step"-->
+            <!--android:text="步数"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="2"-->
+        <!--&gt;-->
+        <!--<TextView-->
+
+            <!--android:text="里程"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_distance"-->
+            <!--android:text="里程"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+
+    <!--</LinearLayout>-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal"-->
+        <!--android:weightSum="2"-->
+        <!--&gt;-->
+        <!--<TextView-->
+
+            <!--android:text="热量"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/tv_hot"-->
+            <!--android:text="热量"-->
+            <!--android:textSize="20dp"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_height="wrap_content" />-->
+
+
+    <!--</LinearLayout>-->
+</LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+    </LinearLayout>
+</layout>
