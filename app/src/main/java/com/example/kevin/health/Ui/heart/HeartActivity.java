@@ -35,12 +35,13 @@ public class HeartActivity extends BaseActivity {
         setToolbarBackground(getResources().getColor(R.color.colorPrimary));
         setToolbarBackIcon(ToolbarDelegate.CLOSE,ToolbarDelegate.COLOR_BLACK);
 
-        HeartFragment fragment = HeartFragment.newInstance();
-        if (fragment==null){
-            setMainFragment(fragment,"heart");
+
+
+
+
         }
 
     }
 
 
-}
+

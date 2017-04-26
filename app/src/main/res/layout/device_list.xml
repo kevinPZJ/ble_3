@@ -24,13 +24,33 @@
             android:textSize="15dip" />
 
         <ImageView
-            android:id="@+id/about"
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:src="@android:drawable/ic_menu_info_details" />
     </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#666" >
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:gravity="center_horizontal"
+            android:text="若搜索不到手环，可通过触摸激活手环"
+            android:textColor="#fff"
+            android:textSize="15dip" />
+
+
+    </RelativeLayout>
+
 
     <LinearLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"

@@ -69,7 +69,7 @@
                     android:textColor="@color/txt_black_color"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
-                    android:text="未连接 "
+                    android:text="选择蓝牙设备"
                     />
             </RelativeLayout>
         </LinearLayout>
@@ -81,7 +81,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <LinearLayout
+            <RelativeLayout
                 android:gravity="center_vertical"
                 android:minHeight="50dp"
                 android:orientation="horizontal"
@@ -96,17 +96,82 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="心率"
-                    android:drawableRight="@mipmap/default_end_arrow"
                     android:gravity="center_vertical"
                     android:drawableLeft="@mipmap/icon_status_nodevice"
                     android:textSize="@dimen/text_size_button"/>
+                <ImageView
+                    android:id="@+id/iv_heart_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
 
-            </LinearLayout>
+                    android:paddingRight="5dp"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/arrow_right"/>
+
+
+            </RelativeLayout>
 
 
         </LinearLayout>
-        <View style="@style/line_view_style_landscape"/>
+        <LinearLayout
+            android:id="@+id/layout_heart_rate_chart"
+            android:visibility="gone"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <lecho.lib.hellocharts.view.LineChartView
+                android:id="@+id/heart_chart"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
 
+        </LinearLayout>
+        <View style="@style/line_view_style_landscape"/>
+        <LinearLayout
+            android:id="@+id/layout_power"
+            android:background="@drawable/item_selector"
+            android:clickable="true"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:gravity="center_vertical"
+                android:minHeight="50dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="电量"
+                    android:gravity="center_vertical"
+                    android:drawableLeft="@mipmap/icon_status_nodevice"
+                    android:textSize="@dimen/text_size_button"
+                    android:layout_alignParentStart="true" />
+              <TextView
+                  android:id="@+id/tv_power"
+                  android:paddingRight="5dp"
+                  android:gravity="center"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentRight="true"
+                  android:text="0"
+                  android:textSize="20sp"
+                   />
+
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
 
 
     <!--<TextView-->

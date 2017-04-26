@@ -61,7 +61,7 @@ public static byte mTheCmd = 0x06;
 
 		return setMessageByteData(mTheCmd, data, data.length);
 	}
-	public byte[] getAllDate() {
+	public byte[] getAllData() {
 		byte[] data = new byte[1];
 
 		data[0] = 0x00;

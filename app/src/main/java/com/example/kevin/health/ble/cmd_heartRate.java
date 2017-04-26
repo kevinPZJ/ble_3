@@ -5,10 +5,7 @@ import android.util.Log;
 public class cmd_heartRate extends BaseBleMessage {
 
 
-/**
- * 
-手
- */
+
 	public static byte mTheCmd = 0x06;
 	
 	public byte[] dealBleResponse(byte[] notifyData, int dataLen) {

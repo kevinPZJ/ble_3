@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -42,14 +44,32 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
-import static com.example.kevin.health.R.id.Step;
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.LineChartView;
+import rx.Subscription;
+import rx.functions.Action1;
+
+import rx.schedulers.Schedulers;
+
+import static rx.Observable.interval;
+
 
 
 public class BleActivity extends AppCompatActivity {
-
 
     private static final int REQUEST_SELECT_DEVICE = 101;
     private static final int REQUEST_ENABLE_BT = 102;
@@ -64,21 +84,22 @@ public class BleActivity extends AppCompatActivity {
 
 
     private BluetoothDevice mDevice = null;
-
-
-    BleNotifyParse bleNotify = new BleNotifyParse();
+    private BleNotifyParse bleNotify = new BleNotifyParse();
 
     private byte[] tx_data = new byte[512];
     private int tx_data_len = 0;
     private int tx_data_front = 0;
     private int tx_data_rear = 0;
 
-
     final int intf_none = 0;
     final int intf_ble_uart = 1;
     int intf = intf_ble_uart;
 
-    private LinearLayout layoutHheartRate;
+    private LinearLayout layoutHeartRate;
+    private LinearLayout layoutHeartRateChart;
+    private LineChartView heartChart;
+    private ImageView ivHeartArrow;
+
     private TextView tvDeviceStatus;
     private Button btnDeviceStatus;
     private StepView stepView;
@@ -125,16 +146,27 @@ public class BleActivity extends AppCompatActivity {
     };
 
 
-
     private boolean bStartHRTest = false;
-    private boolean isContinueGetData =true;
+    private boolean stopSendCmd_GetData = false;
+    private boolean isShowHeart;
 
 
-    private String BLe_response = "";
+    private String BLe_response = "00000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
-    private int step = 7563;
-    private int distance ;
-    private int cal ;
+    private int step = 0;
+    private int distance;
+    private int cal;
+    private float heartRate = 0 ;
+
+    private Subscription getDataSub;
+    private Subscription getHeartSub;
+
+
+    private LineChartData lineChartData;
+    private List<Line> linesList;
+    private List<PointValue> pointValueList;
+    private int position = 0;
+    private Axis axisY, axisX;
 
 
 
@@ -159,7 +191,9 @@ public class BleActivity extends AppCompatActivity {
             bStartHRTest = true;
             mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(config.getAddr());
         }
+
     }
+
     private void initOnClickEvent() {
         btnDeviceStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,13 +250,13 @@ public class BleActivity extends AppCompatActivity {
     private void initView() {
 
         ActivityBleBinding binding = DataBindingUtil.setContentView(BleActivity.this, R.layout.activity_ble);
-        btnDeviceStatus =binding.btnDeviceStatus;
+        btnDeviceStatus = binding.btnDeviceStatus;
         tvDeviceStatus = binding.tvDeviceStatus;
-        layoutHheartRate=binding.layoutHeartRate;
+        layoutHeartRate = binding.layoutHeartRate;
+        layoutHeartRateChart=binding.layoutHeartRateChart;
+        ivHeartArrow=binding.ivHeartArrow;
+        heartChart=binding.heartChart;
         stepView = binding.Step;
-
-        stepView = (StepView) findViewById(Step);
-
 
         stepView.setMaxProgress(10000);//设置每日目标步数
         stepView.setProgress(step);//每日步数
@@ -230,39 +264,44 @@ public class BleActivity extends AppCompatActivity {
         stepView.setFormat(distance);
 //        setStep();
 
-        layoutHheartRate.setOnClickListener(new View.OnClickListener() {
+        layoutHeartRate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setTx_data(new cmd_getNowData().getAllDate());
-                Toast.makeText(BleActivity.this, "66666", Toast.LENGTH_SHORT).show();
+                isShowHeart=!isShowHeart;
+               if (isShowHeart) {
+                   layoutHeartRateChart.setVisibility(View.VISIBLE);
+                   ivHeartArrow.setImageResource(R.mipmap.arrow_down);
+                   showHeart();
+               }else {
+                   layoutHeartRateChart.setVisibility(View.GONE);
+                   ivHeartArrow.setImageResource(R.mipmap.arrow_right);
+                   getHeartSub.unsubscribe();
+                   pointValueList.clear();
+                   linesList.clear();
+                   position=0;
+
+               }
             }
-        });
+        });}
+
+    private void getData() {
+        if (mDevice != null) {
+            if (mDevice.getAddress() != null & !"".equals(mDevice.getAddress())) {
+
+                getDataSub = interval(1, TimeUnit.SECONDS, Schedulers.newThread()).subscribe(new Action1<Long>() {
+                    @Override
+                    public void call(Long aLong) {
+                        setTx_data(new cmd_getNowData().getAllData());
+                    }
+                });
+
+            }
+        }
     }
 
-//    private void setStep() {
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(2000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                handler.post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        stepView.stopAnimator(step); //手环传过来的步数
-//
-//                    }
-//                });
-//            }
-//        }).start();
-//
-//
-//    }
 
     private void initService() {
+
         Intent bindIntent = new Intent(this, UartService.class);
         bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -284,8 +323,7 @@ public class BleActivity extends AppCompatActivity {
                                        IBinder rawBinder) {
             if (intf == intf_ble_uart) {
                 mUartService = ((UartService.LocalBinder) rawBinder).getService();
-                Log.d(TAG, "onServiceConnected mService= " + mUartService)
-                ;
+                Log.d(TAG, "onServiceConnected mService= " + mUartService);
                 if (!mUartService.initialize()) {
                     Log.e(TAG, "Unable to initialize Bluetooth");
                     finish();
@@ -383,8 +421,6 @@ public class BleActivity extends AppCompatActivity {
                                 public void run() {
                                     String power = BLe_response.substring(8, 10);
                                     BigInteger srch = new BigInteger(power, 16);
-
-
                                 }
                             });
                             break;
@@ -396,7 +432,8 @@ public class BleActivity extends AppCompatActivity {
 
                                     String heart = BLe_response.substring(10, 12);
                                     BigInteger heartforHex = new BigInteger(heart, 16);
-//                                    tvHeartRate.setText(heartforHex.toString());
+
+                                    heartRate = Float.valueOf(heartforHex.toString());
 
                                     String steps_01 = BLe_response.substring(12, 14);
                                     BigInteger stepforHex_01 = new BigInteger(steps_01, 16);
@@ -407,7 +444,7 @@ public class BleActivity extends AppCompatActivity {
                                     int step_02 = Integer.parseInt(stepforHex_02.toString());
 
 //                                    tvStep.setText((step_01 + step_02) + "");
-                                    step=step_01 + step_02;
+                                    step = step_01 + step_02;
 
                                     String dis_01 = BLe_response.substring(18, 22);
                                     BigInteger disforHex_01 = new BigInteger(dis_01, 16);
@@ -418,7 +455,7 @@ public class BleActivity extends AppCompatActivity {
                                     int num_dis_02 = Integer.parseInt(disforHex_02.toString());
 
 //                                    tvDistance.setText((num_dis_01 + num_dis_02) + "米");
-                                    distance =num_dis_01 + num_dis_02;
+                                    distance = num_dis_01 + num_dis_02;
 
                                     String cal_01 = BLe_response.substring(26, 30);
                                     BigInteger calorHex_01 = new BigInteger(cal_01, 16);
@@ -430,15 +467,16 @@ public class BleActivity extends AppCompatActivity {
 
 //                                    tvHot.setText((num_cal_01 + num_cal_02) + "大卡");
 
-                                    cal=(num_cal_01 + num_cal_02);
+                                    cal = (num_cal_01 + num_cal_02);
 
-                                    isContinueGetData=false;
 
                                     stepView.setFormat(distance);
                                     stepView.setCarol(cal);
 
 
                                     stepView.stopAnimator(step);
+
+                                    stopSendCmd_GetData = true;
                                 }
                             });
 
@@ -537,11 +575,12 @@ public class BleActivity extends AppCompatActivity {
         super.onResume();
 
 //        initService();
+//        getData();
 
-        if (bStartHRTest){
-            setTvDeviceStatus("断开连接");
-        }else {
-            setTvDeviceStatus("未连接");
+        if (bStartHRTest) {
+            setTvDeviceStatus("Connected");
+        } else {
+            setTvDeviceStatus("DisConnected");
         }
 
 
@@ -556,6 +595,8 @@ public class BleActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -572,7 +613,7 @@ public class BleActivity extends AppCompatActivity {
 //                    tvDeviceStatus.setText("Connecting");
 
                     if (intf == intf_ble_uart) mUartService.connect(deviceAddress);
-                    bStartHRTest= true;
+                    bStartHRTest = true;
                 }
                 break;
             case REQUEST_ENABLE_BT:
@@ -618,12 +659,126 @@ public class BleActivity extends AppCompatActivity {
         }
     }
 
-  private void setTvDeviceStatus(String status){
-      tvDeviceStatus.setText(status);
-  }
- private void  setBtnDeviceStatus(String status){
 
-    btnDeviceStatus.setText(status);
+
+
+
+
+    private void  showHeart(){
+
+        pointValueList = new ArrayList<>();
+        linesList = new ArrayList<>();
+        //初始化坐标轴
+        axisY = new Axis();
+        //添加坐标轴的名称
+        axisY.setLineColor(Color.parseColor("#aab2bd"));
+        axisY.setTextColor(Color.parseColor("#aab2bd"));
+        axisX = new Axis();
+        axisX.setLineColor(Color.parseColor("#aab2bd"));
+        lineChartData = initDatas(null);
+        heartChart.setLineChartData(lineChartData);
+
+        Viewport port = initViewPort(0, 30);
+        heartChart.setCurrentViewportWithAnimation(port);
+        heartChart.setInteractive(false);
+        heartChart.setScrollEnabled(true);
+        heartChart.setValueTouchEnabled(true);
+        heartChart.setFocusableInTouchMode(true);
+        heartChart.setViewportCalculationEnabled(false);
+        heartChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+        heartChart.startDataAnimation();
+
+
+
+
+        getHeartSub =interval(1, TimeUnit.SECONDS, Schedulers.newThread()).subscribe(new Action1<Long>() {
+            @Override
+            public void call(Long aLong) {
+
+                setTx_data(new cmd_getNowData().getAllData());
+
+                PointValue value1 = new PointValue(position * 5,
+                      heartRate);
+                pointValueList.add(value1);
+
+                float x = value1.getX();
+                //根据新的点的集合画出新的线
+                Line line = new Line(pointValueList);
+                line.setColor(Color.RED);
+                line.setShape(ValueShape.CIRCLE);
+                line.setCubic(true);//曲线是否平滑，即是曲线还是折线
+                line.setHasLabels(true);//曲线的数据坐标是否加上备注
+
+                linesList.clear();
+                linesList.add(line);
+                lineChartData = initDatas(linesList);
+                heartChart.setLineChartData(lineChartData);
+                //根据点的横坐实时变幻坐标的视图范围
+                Viewport port;
+                if (x > 30) {
+                    port = initViewPort(x - 30, x);
+                } else {
+                    port = initViewPort(0, 30);
+                }
+                heartChart.setCurrentViewport(port);//当前窗口
+
+                Viewport maPort = initMaxViewPort(x);
+                heartChart.setMaximumViewport(maPort);//最大窗口
+                position++;
+            }
+        });
+
+
+
+    }
+
+    private LineChartData initDatas(List<Line> lines) {
+        LineChartData data = new LineChartData(lines);
+        data.setAxisYLeft(axisY);
+        data.setAxisXBottom(axisX);
+        return data;
+    }
+
+
+    /**
+     * 当前显示区域
+     * @param left
+     * @param right
+     * @return
+     */
+    private Viewport initViewPort(float left, float right) {
+        Viewport port = new Viewport();
+        port.top = 150;
+        port.bottom = 0;
+        port.left = left;
+        port.right = right;
+        return port;
+    }
+
+    /**
+     * 最大显示区域
+     *
+     * @param right
+     * @return
+     */
+    private Viewport initMaxViewPort(float right) {
+        Viewport port = new Viewport();
+        port.top = 150;
+        port.bottom = 0;
+        port.left = 0;
+        port.right = right + 50;
+        return port;
+    }
+
+
+    private void setTvDeviceStatus(String status) {
+        tvDeviceStatus.setText(status);
+
+    }
+
+    private void setBtnDeviceStatus(String status) {
+
+        btnDeviceStatus.setText(status);
 
     }
 }
